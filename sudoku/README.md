@@ -3,15 +3,16 @@
 Sudoku is a sudoku-solver written in Go.  It is inspired by Norvig's solution in python (http://norvig.com/sudoku.html).
 
 It is broken down into several key parts:
-1.  Sudoku board is an object representation as a map data structure.  Each cell has a label (eg A0, A1, A2) and has possible values 1-9.  Therefore, the board is a a map of the labels to its possible values.  At the beginning of the implementation, every single cell has '123456789' as possible values.  When the board is set up, if the value is known for a cell, then it sets the possible value to be that known value (eg A0 = 4). 
-2.  Two elimination strategies are used:  the first elimination strategy is that if a cell value has only ONE possible value, then the other cells cannot contain this as a possible value and therefore the value may be eliminated from them.  For example, if A0 is 4, then 4 can be eliminated from its associated rows (A1 to A8), associated columns (B0 to I0), and associated quadrants (A1 A2 B0 B1 B2 C0 C1 C2).  The collection of these associated cells is called 'peers'.
-3.  The second elimination strategy is that if for a given cell, its potential value is not found in any of its associated strategy, then we can safely set that cell's value to its potential value.  For example, if A0's potential values are '123' but 3 is not present in A1 to A8, we can assign 3 to A0's cell.  The collection of these strategies for each cell is called 'units', and include its horizontal, vertical, and quadrant cells.
-4.  Any elimination can propogate additional eliminations on its associated cells.
-5.  If no possible eliminations can be performed for a full iteration where we walk through every single cell, then we can consider the board to be 'solved', or converged.
-6.  If the board is converged but it's not valid, meaning there is at least one cell with more than 2 possible values, then the imlementation will do a depth-first recursive search by eliminating one of the possible values for the cell with the smallest possible values and trying to solve that board.  Each tested elimination is considered to be a 'guess'.  For very easy puzzles, 'guesses' can be zero.
-7.  Because most of the boards only have one solution, if the guess is incorrect, then the board will converge to a non-valid state.  In this state, there will be at least one cell with zero possible values.  If this state is reached, we will know the guess is incorrect.
-8.  For boards with multiple solutions, which can result if the number of filled in squares is less than 8, this implementation finds the first successful solution.
-9.  The list of sudoku boards is taken from Norvig's website containing mainly 'hard' and 'very hard' puzzles.
+
+1.  **SETUP** Sudoku board is an object representation as a map data structure.  Each cell has a label (eg A0, A1, A2) and has possible values 1-9.  Therefore, the board is a a map of the labels to its possible values.  At the beginning of the implementation, every single cell has '123456789' as possible values.  When the board is set up, if the value is known for a cell, then it sets the possible value to be that known value (eg A0 = 4). 
+2.  **ELIMINATION ONE** Two elimination strategies are used:  the first elimination strategy is that if a cell value has only ONE possible value, then the other cells cannot contain this as a possible value and therefore the value may be eliminated from them.  For example, if A0 is 4, then 4 can be eliminated from its associated rows (A1 to A8), associated columns (B0 to I0), and associated quadrants (A1 A2 B0 B1 B2 C0 C1 C2).  The collection of these associated cells is called 'peers'.
+3.  **ELIMINATION TWO** The second elimination strategy is that if for a given cell, its potential value is not found in any of its associated strategy, then we can safely set that cell's value to its potential value.  For example, if A0's potential values are '123' but 3 is not present in A1 to A8, we can assign 3 to A0's cell.  The collection of these strategies for each cell is called 'units', and include its horizontal, vertical, and quadrant cells.
+4. Any elimination can propogate additional eliminations on its associated cells.
+5.  **TESTING CONVERGENCE** If no possible eliminations can be performed for a full iteration where we walk through every single cell, then we can consider the board to be 'solved', or converged.
+6.  **DEPTH-FIRST SEARCH** If the board is converged but it's not valid, meaning there is at least one cell with more than 2 possible values, then the imlementation will do a depth-first recursive search by eliminating one of the possible values for the cell with the smallest possible values and trying to solve that board.  Each tested elimination is considered to be a 'guess'.  For very easy puzzles, 'guesses' can be zero.
+7.  **INVALID BOARDS** Because most of the boards only have one solution, if the guess is incorrect, then the board will converge to a non-valid state.  In this state, there will be at least one cell with zero possible values.  If this state is reached, we will know the guess is incorrect.
+8.  **MULTIPLE SOLUTIONS** For boards with multiple solutions, which can result if the number of initially filled in squares is less than 8, this implementation finds the first successful solution.
+9.  **EXAMPLES** The list of sudoku boards is taken from Norvig's website containing mainly 'hard' and 'very hard' puzzles in 'sudoku_boards.txt'
 
 ```bash
 ./sudoku
@@ -46,7 +47,7 @@ Board: Solution
 2014/11/10 10:22:45 Guesses taken:  304
 2014/11/10 10:22:45 Took 0.1263 secs
 2014/11/10 10:22:45 Solved:  1
-----------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------
 ...
 ...
 ...
@@ -82,7 +83,7 @@ Board: Solution
 2014/11/10 10:22:51 Guesses taken:  50
 2014/11/10 10:22:51 Took 0.0251 secs
 2014/11/10 10:22:51 Solved:  106
-----------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------
 metrics: 10:22:51.093025 timer solve
 metrics: 10:22:51.093029   count:             106
 metrics: 10:22:51.093032   min:           1357397
@@ -98,4 +99,8 @@ metrics: 10:22:51.093058   1-min rate:         13.40
 metrics: 10:22:51.102981   5-min rate:         13.40
 metrics: 10:22:51.102990   15-min rate:        13.40
 metrics: 10:22:51.102994   mean rate:          17.17
+
+# Note: units of timer are in nanoseconds.  Therefore, the average time 
+# to solve each puzzle of the 106 puzzles is .058 seconds
+
 ```
