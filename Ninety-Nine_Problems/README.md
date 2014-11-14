@@ -1,0 +1,1 @@
+A coworker introduced me to http://aperiodic.net/phil/scala/s-99/, 99 problems.  Many of these seem to stem from computer science topics, so lets do it!  For first iteration, choice of language is ruby
